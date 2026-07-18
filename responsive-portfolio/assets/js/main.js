@@ -149,13 +149,35 @@ updatePhoneLabelState();
 /*=============== CONTACT EMAIL JS ===============*/
 const contactForm = document.getElementById('contact-form'),
    contactMessage = document.getElementById('contact-message')
+// lock max touch
+const submitBtn = document.getElementById("submit-btn");
+
+let isSubmitting = false;
 
 const sendEmail = async (e) => {
-   //Prevent the page from reloading
-   e.preventDefault()
+   e.preventDefault();
 
-   // Wait until utils.js is loaded
+   if (isSubmitting) {
+      return;
+   }
+
+   isSubmitting = true;
+
+   submitBtn.disabled = true;
+
+   submitBtn.innerHTML = `
+      <span>Sending...</span>
+      <i class="ri-loader-4-line"></i>
+   `;
+
    await iti.promise;
+
+// const sendEmail = async (e) => {
+//    //Prevent the page from reloading
+//    e.preventDefault()
+
+//    // Wait until utils.js is loaded
+//    await iti.promise;
 
    // Validate phone number
    if (!iti.isValidNumber()) {
@@ -262,10 +284,27 @@ const sendEmail = async (e) => {
    } catch (error) {
       // Show error message
       contactMessage.textContent = 'Unable to send message. Please try again later.'      //'Message not sent (service error) ❌'
-   } finally {
-      // Remove message after five seconds
-      setTimeout(() => contactMessage.textContent = '', 5000)
-   }
+   // } finally {
+   //    // Remove message after five seconds
+   //    setTimeout(() => contactMessage.textContent = '', 5000)
+   // }
+   } 
+   
+   finally {
+
+   isSubmitting = false;
+
+   submitBtn.disabled = false;
+
+   submitBtn.innerHTML = `
+      <span>Send Message</span>
+      <i class="ri-send-plane-line"></i>
+   `;
+
+   setTimeout(() => {
+      contactMessage.textContent = "";
+   }, 5000);
+}
 }
 contactForm.addEventListener('submit', sendEmail)
 
